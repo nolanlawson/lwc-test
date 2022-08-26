@@ -90,7 +90,11 @@ function getScopedStylesOption(src, filePath) {
     const fileName = path.basename(filePath, '.css');
     const isScoped = path.extname(fileName) === '.scoped';
 
-    return src && src.length > 0 && isCSS && isScoped;
+    const result = src && src.length > 0 && isCSS && isScoped;
+    if (result) {
+        debugger
+    }
+    return result
 }
 
 module.exports = {
