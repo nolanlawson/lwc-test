@@ -6,6 +6,7 @@
  */
 const fs = require('fs');
 const { resolve, extname, join, dirname, basename } = require('path');
+const { URLSearchParams } = require('url');
 
 const EMPTY_CSS_MOCK = resolve(__dirname, '..', 'resources', 'emptyStyleMock.js');
 const EMPTY_HTML_MOCK = resolve(__dirname, '..', 'resources', 'emptyHtmlMock.js');
@@ -61,10 +62,6 @@ function isValidCSSImport(importee, { basedir }) {
 }
 
 function getLwcPath(path, options) {
-    if (path.endsWith('?scoped=true')) {
-        // remove query param for scoped styles
-        path = path.substring(0, path.length - 12);
-    }
     // If is a special LWC package, resolve it from commonjs
     if (ALLOWLISTED_LWC_PACKAGES[path]) {
         return require.resolve(ALLOWLISTED_LWC_PACKAGES[path]);
@@ -83,6 +80,19 @@ function getLwcPath(path, options) {
     return path;
 }
 
+function parseQueryParamsForScopedOption(path) {
+    const [pathWithoutQuery, query] = path.split('?', 2);
+    const params = query && new URLSearchParams(query);
+    const scoped = !!(params && params.get('scoped'));
+    return {
+        pathWithoutQuery,
+        scoped,
+    };
+}
+
 module.exports = function (path, options) {
-    return options.defaultResolver(getLwcPath(path, options), options);
+    const { pathWithoutQuery, scoped } = parseQueryParamsForScopedOption(path)
+    const lwcPath = getLwcPath(pathWithoutQuery, options)
+    const resolvedModule = options.defaultResolver(lwcPath, options);
+    return resolvedModule
 };

@@ -95,6 +95,7 @@ function getScopedStylesOption(src, filePath) {
 
 module.exports = {
     process(src, filePath) {
+        debugger
         if (isTypeScript(filePath)) {
             src = transformTypeScript(src, filePath);
         }

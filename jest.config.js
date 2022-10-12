@@ -45,11 +45,11 @@ function integration({ nativeShadow }) {
 
 module.exports = {
     projects: [
-        unitTest({ nativeShadow: false }),
-        unitTest({ nativeShadow: true }),
-        integration({ nativeShadow: false }),
+//        unitTest({ nativeShadow: false }),
+//        unitTest({ nativeShadow: true }),
+//        integration({ nativeShadow: false }),
         integration({ nativeShadow: true }),
-        {
+/*        {
             displayName: {
                 name: `integration (ssr)`,
                 color: 'magenta'
@@ -60,6 +60,6 @@ module.exports = {
             moduleNameMapper: {
                 '^ssr/(.+)$': '<rootDir>/src/modules/ssr/$1/$1',
             },
-        }
+        }  */
     ],
 };
