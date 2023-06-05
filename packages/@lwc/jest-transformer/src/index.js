@@ -119,11 +119,17 @@ module.exports = {
         const scopeToken = filePath.endsWith('.html') && (matcher = code.match(/tmpl.stylesheetToken = "([^"]+)";/)) && matcher[1];
 
         if (scopeToken) {
+            // Modify the code so that it calls into @lwc/jest-shared and adds the scope token as a
+            // known scope token so we can replace it later.
+            // Note we have to modify the code rather than use @lwc/jest-shared directly because
+            // the transformer does not run in the same Node process as the serializer.
             const magicString = new MagicString(result.code);
 
-            magicString.append(`\nconst { addKnownScopeToken } = require('@lwc/jest-shared');`);
-            magicString.append(`\naddKnownScopeToken(${JSON.stringify(scopeToken)});`);
-            magicString.append(`\naddKnownScopeToken(${JSON.stringify(`${scopeToken}-host`)});`);
+            magicString.append(
+                `\nconst { addKnownScopeToken } = require('@lwc/jest-shared');` +
+                `\naddKnownScopeToken(${JSON.stringify(scopeToken)});` +
+                `\naddKnownScopeToken(${JSON.stringify(`${scopeToken}-host`)});`
+            );
 
             const map = magicString.generateMap({
                 source: filePath,
